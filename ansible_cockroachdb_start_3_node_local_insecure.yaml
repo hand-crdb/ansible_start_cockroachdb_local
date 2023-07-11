@@ -1,0 +1,31 @@
+# ref:
+#      Start a Local Cluster (Insecure)
+#      https://www.cockroachlabs.com/docs/v22.1/start-a-local-cluster
+-
+    name: Start 3-node CockroachDB cluster (insecure) on local machine
+    hosts: localhost
+    tasks:
+        - name: See if node1 is running
+          shell: ps aux | grep -v grep | grep "cockroach start" | grep store=node1
+          register: ps_output_node
+          ignore_errors: True
+        - name: Start node 1 task
+          command: cockroach start --insecure --store=node1 --listen-addr=localhost:26257 --http-addr=localhost:8080 --join=localhost:26257,localhost:26258,localhost:26259 --background
+          when: ps_output_node.stdout.find('store=node1') == -1
+        - name: See if node2 is running
+          shell: ps aux | grep -v grep | grep "cockroach start" | grep store=node2
+          register: ps_output_node
+          ignore_errors: True
+        - name: Start node 2
+          command: cockroach start --insecure --store=node2 --listen-addr=localhost:26258 --http-addr=localhost:8081 --join=localhost:26257,localhost:26258,localhost:26259 --background
+          when: ps_output_node.stdout.find('store=node2') == -1
+        - name: See if node3 is running
+          shell: ps aux | grep -v grep | grep "cockroach start" | grep store=node3
+          register: ps_output_node
+          ignore_errors: True
+        - name: Start node 3
+          command: cockroach start --insecure --store=node3 --listen-addr=localhost:26259 --http-addr=localhost:8082 --join=localhost:26257,localhost:26258,localhost:26259 --background
+          when: ps_output_node.stdout.find('store=node3') == -1
+        - name: Initialize cluster task
+          command: cockroach init --insecure --host=localhost:26257
+          ignore_errors: True
