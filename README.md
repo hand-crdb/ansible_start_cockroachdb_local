@@ -16,6 +16,8 @@ These Ansible playbooks are idempotent, so you can run them multiple times safel
 * They check to see if the `cockroachdb` process is running for each of the 3 nodes before starting each node.  
 * Similar logic applies to files and directories.
 * The `cockroach init` command is always executed, but the error that will result from running it a second time is ignored.
+* These playbooks differ from the documented commands in one respect: the `--store` parameter is modified so CockroachDB will not create a large 
+[ballast file](https://www.cockroachlabs.com/docs/stable/cluster-setup-troubleshooting#automatic-ballast-files).
 
 **Assumptions:**
 
